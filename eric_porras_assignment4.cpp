@@ -3,40 +3,53 @@
 #include <fstream>
 #include <thread>
 #include <string>
-
+ 
 std::vector<std::vector<int>> matrixOne;
 std::vector<std::vector<int>> matrixTwo;
 std::vector<std::vector<int>> finalMatrix;
 
 void matrixInput();
-void matrixMultiplication();
+void matrixMultiplication(int, int);
 void printMatrix();
 
 int main() {
+    std::vector<std::thread> threadPool;
+    int r = 0;
+    int c = 0;
+    int maxThreads = std::thread::hardware_concurrency();
+    
     matrixInput();
-    matrixMultiplication();
+
+    finalMatrix.resize(matrixOne.size(), std::vector<int>(matrixTwo[0].size(),0));
+
+    for (int z = 0; z < finalMatrix.size(); z++) {
+            for (int i = 0; i < finalMatrix[0].size(); i++) {
+            threadPool.push_back(std::thread(matrixMultiplication, z, i));
+            if (threadPool.size() % maxThreads == 0) {
+                for (int l = 0; l < threadPool.size(); l++){ 
+                    threadPool[l].join();
+                    threadPool.clear();
+                }
+            }
+        }
+    }
     printMatrix();
+
+    for (int l = 0; l < threadPool.size(); l++){ 
+        threadPool[l].join();          
+    }
+    
     return 0;
 }
 
-void matrixMultiplication() {
-    std::vector<int> row;
-    int counter = 0;
-    int newMatrix = 0;
-    while (counter < matrixOne.size()) {
-        for (int z = 0; z < matrixTwo[0].size(); z++) {
-            for (int i = 0; i < matrixOne[0].size(); i++) {
-                newMatrix = newMatrix + matrixOne[counter][i] * matrixTwo[i][z];
-            }
-            row.push_back(newMatrix);
-            newMatrix = 0;
-        }
-        finalMatrix.push_back(row);
-        row.clear();
-        counter++;
+void matrixMultiplication(int r, int c) {
+    int matrixNum = 0;
+    for (int z = 0; z < matrixOne[0].size(); z++) {
+        matrixNum = matrixNum + matrixOne[r][z] * matrixTwo[z][c];
     }
-
+    finalMatrix[r][c] = matrixNum;
 }
+
 
 void printMatrix() {
     for (int i = 0; i < finalMatrix.size(); i ++) {
