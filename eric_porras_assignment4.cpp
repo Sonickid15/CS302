@@ -26,19 +26,19 @@ int main() {
             for (int i = 0; i < finalMatrix[0].size(); i++) {
             threadPool.push_back(std::thread(matrixMultiplication, z, i));
             if (threadPool.size() % maxThreads == 0) {
-                for (int l = 0; l < threadPool.size(); l++){ 
-                    threadPool[l].join();
-                    threadPool.clear();
+                for (int j = 0; j < threadPool.size(); j++){ 
+                    threadPool[j].join();
                 }
+                threadPool.clear();
             }
         }
     }
     printMatrix();
 
-    for (int l = 0; l < threadPool.size(); l++){ 
-        threadPool[l].join();          
+    for (int i = 0; i < threadPool.size(); i++){ 
+        threadPool[i].join();          
     }
-    
+
     return 0;
 }
 
@@ -66,7 +66,7 @@ void matrixInput() {
     int matrixSize[2];
     int matrixValues;
     std::vector<int> matrixRow;
-
+    std::cout << "Enter filename: ";
     std::cin >> fileName;
     file.open(fileName);
     file >> matrixSize[0];
